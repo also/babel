@@ -107,14 +107,17 @@ export default function ({ types: t }) {
             }
 
             let ref = this.originalPath.node.init;
+            const propertyNames = [];
 
             path.findParent((path) => {
               if (path.isObjectProperty()) {
-                ref = t.memberExpression(ref, t.identifier(path.node.key.name));
+                propertyNames.unshift(path.node.key.name);
               } else if (path.isVariableDeclarator()) {
                 return true;
               }
             });
+
+            propertyNames.forEach((name) => ref = t.memberExpression(ref, t.identifier(name)));
 
             const [ argument, callExpression ] = createObjectSpread(
               file,
